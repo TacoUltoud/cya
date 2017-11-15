@@ -3,7 +3,7 @@ var DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/
 var SCOPES = "https://www.googleapis.com/auth/calendar.readonly";
 
 var authorizeButton = document.getElementById('authorize-button');
-var signoutButton = document.getElementById('signout-button');
+var info = document.getElementById('info')
 
 function handleClientLoad() {
   gapi.load('client:auth2', initClient);
@@ -21,29 +21,23 @@ function initClient() {
     // gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
     updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
     authorizeButton.onclick = handleAuthClick;
-    signoutButton.onclick = handleSignoutClick;
   });
 }
 
 function updateSigninStatus(isSignedIn) {
   if (isSignedIn) {
     authorizeButton.style.display = 'none';
-    signoutButton.style.display = 'block';
+    info.style.display = 'none'
     location.href="https://demo3.104di.clifflu.net/calendar"
+    // location.href="http://localhost:8080/calendar"
   } else {
     authorizeButton.style.display = 'block';
-    signoutButton.style.display = 'none';
+    info.style.display = 'block'    
   }
 }
 
 function handleAuthClick(event) {
   gapi.auth2.getAuthInstance().signIn();
-}
-
-function handleSignoutClick(event) {
-  gapi.auth2.getAuthInstance().signOut();
-  gapi.auth2.getAuthInstance().disconnect();
-  document.location.href = "/";
 }
 
 function renderButton() {
