@@ -12,6 +12,7 @@ var DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/
 var SCOPES = "https://www.googleapis.com/auth/calendar.readonly";
 
 var signoutButton = document.getElementById('signout-button');
+var loading = document.getElementById('loading')
 
 function handleClientLoad() {
   gapi.load('client:auth2', initClient);
@@ -23,10 +24,23 @@ function initClient() {
     clientId: CLIENT_ID,
     scope: SCOPES
   }).then(function () {
+    updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
     listUpcomingEvents();
     signoutButton.onclick = handleSignoutClick;
   });
 }
+
+function updateSigninStatus(isSignedIn) {
+  if(isSignedIn){
+    signoutButton.style.display = "block"
+    loading.style.display = "block"
+  }
+  else{
+    location.href="https://demo3.104di.clifflu.net"
+    // location.href="http://localhost:8080"
+  }
+}
+
 function handleSignoutClick(event) {
   gapi.auth2.getAuthInstance().signOut();
   gapi.auth2.getAuthInstance().disconnect();
@@ -226,6 +240,7 @@ function countDown(){
     if(diff < 0){
       clearInterval(countDown)
       tmp.innerText = "Expired!"
+      setTimeout(() => {location.reload()} , 300000)
     }
   } ,1000)
 }
