@@ -6,6 +6,8 @@ var temp;
 var evt;
 var myCurpos = [];
 var path = []
+var despos={lat:0,lng:0}
+var zoomCenter;
 
 var CLIENT_ID = '506634394743-lfkonje6ojpeqjpfin97v5umupjon3ed.apps.googleusercontent.com';
 var DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"];
@@ -13,6 +15,8 @@ var SCOPES = "https://www.googleapis.com/auth/calendar.readonly";
 
 var signoutButton = document.getElementById('signout-button');
 var loading = document.getElementById('loading')
+var correct = document.getElementById('correct-button')
+var zoom = document.getElementById('zoom-button')
 
 function handleClientLoad() {
   gapi.load('client:auth2', initClient);
@@ -143,7 +147,6 @@ function updatecurpos(){
 }
 setInterval(updatecurpos,5000)
 var check = setInterval(showMap,5000)
-var despos={lat:0,lng:0}
 function showMap(){
   if (evt && checkTime(evt.start.dateTime) <= 1800000) {
     $.ajax({
@@ -159,6 +162,8 @@ function showMap(){
     clearInterval(check)
     document.getElementById("showMap").style.display = "block"
     document.getElementById("loading2").style.display = "none"
+    correct.style.display = 'block'
+    zoom.style.display = 'block'    
   }
   else{
     document.getElementById("loading2").style.display = "none"
@@ -246,8 +251,16 @@ function countDown(){
 }
 function showAndHide(){
   const tmp = document.getElementById("map").firstChild
-  if(tmp.style.display === "block") tmp.style.display = "none"
-  else tmp.style.display = "block"
+  if(tmp.style.display === "block"){
+    correct.style.display = "none"
+    tmp.style.display = "none"
+    zoom.style.display = "none"
+  } 
+  else {
+    correct.style.display = "block"
+    tmp.style.display = "block"
+    zoom.style.display = "block"
+  }
 }
 function Avg(pos){
   var avglat = 0
@@ -265,6 +278,7 @@ function getOtherPos(){
     data:{"event_id":temp.id,
           "email":temp.self.myEmail},
     success: function(result){
+      console.log(result[0].position[result[0].position.length - 1])
       removeMarkers("customMarker")
       addMarker(result,map)
       removeTrack(path)
@@ -272,6 +286,7 @@ function getOtherPos(){
       for(let i = 0;i < result.length;i++){
         path.push(addTrack(result[i].position))
       }
+      zoomCenter=allPosCenter(despos,result)
     }
   })
 }
@@ -352,4 +367,36 @@ function removeTrack(arr){
       }
     }
   }
+}
+function zoomToDes(){
+  map.setCenter(despos);
+  map.setZoom(16);
+}
+function allPosCenter(des,pos){
+  var maxlat=des.lat;
+  var maxlng=des.lng;
+  var minlat=des.lat;
+  var minlng=des.lng;
+  for(let i=0;i<pos.length;i++){
+    var tmp = pos[i].position.length
+    if(pos[i].position[tmp-1].lat>maxlat){
+      maxlat=pos[i].position[tmp-1].lat
+    }
+    if(pos[i].position[tmp-1].lat<minlat){
+      minlat=pos[i].position[tmp-1].lat
+    }
+    if(pos[i].position[tmp-1].lng<minlng){
+      minlng=pos[i].position[tmp-1].lng
+    }
+    if(pos[i].position[tmp-1].lng>maxlng){
+      maxlng=pos[i].position[tmp-1].lng
+    }
+  }
+  return {lat:(maxlat+minlat)/2,lng:(maxlng+minlng)/2}
+}
+function zoomToCenter(){
+  console.log(despos)
+  console.log(zoomCenter)
+  map.setCenter(zoomCenter);
+  map.setZoom(14)
 }
