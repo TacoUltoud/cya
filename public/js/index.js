@@ -29,6 +29,7 @@ function updateSigninStatus(isSignedIn) {
   if (isSignedIn) {
     authorizeButton.style.display = 'none';
     signoutButton.style.display = 'block';
+    location.href="https://demo3.104di.clifflu.net/calendar"
   } else {
     authorizeButton.style.display = 'block';
     signoutButton.style.display = 'none';
