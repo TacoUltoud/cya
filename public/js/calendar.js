@@ -40,8 +40,8 @@ function updateSigninStatus(isSignedIn) {
     loading.style.display = "block"
   }
   else{
-    location.href="https://demo3.104di.clifflu.net"
-    // location.href="http://localhost:8080"
+    // location.href="https://demo3.104di.clifflu.net"
+    location.href="http://localhost:8080"
   }
 }
 

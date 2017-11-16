@@ -15,8 +15,8 @@ function initClient() {
     clientId: CLIENT_ID,
     scope: SCOPES,
     ux_mode:"redirect",
-    redirect_uri:"https://demo3.104di.clifflu.net/calendar"
-    // redirect_uri:"http://localhost:8080/calendar"
+    // redirect_uri:"https://demo3.104di.clifflu.net/calendar"
+    redirect_uri:"http://localhost:8080/calendar"
   }).then(function () {
     // gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
     updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
@@ -28,8 +28,8 @@ function updateSigninStatus(isSignedIn) {
   if (isSignedIn) {
     authorizeButton.style.display = 'none';
     info.style.display = 'none'
-    location.href="https://demo3.104di.clifflu.net/calendar"
-    // location.href="http://localhost:8080/calendar"
+    // location.href="https://demo3.104di.clifflu.net/calendar"
+    location.href="http://localhost:8080/calendar"
   } else {
     authorizeButton.style.display = 'block';
     info.style.display = 'block'    
