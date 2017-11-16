@@ -77,36 +77,36 @@ function listUpcomingEvents() {
     if(evt && checkTime(evt.start.dateTime) < 0){
       evt = res.result.items[1]
     }
-    if(evt && checkTime(evt.start.dateTime) > 0){
-      var temp_attendees = "";
-      if(evt.hasOwnProperty("attendees")){
-        for(let i = 0;i < evt.attendees.length;i++){
-          temp_attendees += (' '+evt.attendees[i].displayName);
-        }
-        var info = {
-          summary: evt.summary,
-          start: getDateTime(evt.start.dateTime),
-          location: evt.location,
-          attendees: temp_attendees,
-        }
+    var temp_attendees = "";
+    if(evt.hasOwnProperty("attendees")){
+      for(let i = 0;i < evt.attendees.length;i++){
+        temp_attendees += (' '+evt.attendees[i].displayName);
       }
-      else{
-        var info = {
-          summary: evt.summary,
-          start: getDateTime(evt.start.dateTime),
-          location: evt.location,
-          attendees: gapi.auth2.getAuthInstance().currentUser.Ab.w3.ig
-        }
-      }
-      temp = {
-        id: evt.id,
+      var info = {
+        summary: evt.summary,
+        start: getDateTime(evt.start.dateTime),
         location: evt.location,
-        self: {
-          myName: gapi.auth2.getAuthInstance().currentUser.Ab.w3.ig,
-          myEmail: gapi.auth2.getAuthInstance().currentUser.Ab.w3.U3,
-          myPhoto:gapi.auth2.getAuthInstance().currentUser.Ab.w3.Paa
-        }
+        attendees: temp_attendees,
       }
+    }
+    else{
+      var info = {
+        summary: evt.summary,
+        start: getDateTime(evt.start.dateTime),
+        location: evt.location,
+        attendees: gapi.auth2.getAuthInstance().currentUser.Ab.w3.ig
+      }
+    }
+    temp = {
+      id: evt.id,
+      location: evt.location,
+      self: {
+        myName: gapi.auth2.getAuthInstance().currentUser.Ab.w3.ig,
+        myEmail: gapi.auth2.getAuthInstance().currentUser.Ab.w3.U3,
+        myPhoto:gapi.auth2.getAuthInstance().currentUser.Ab.w3.Paa
+      }
+    }
+    if(evt && checkTime(evt.start.dateTime) > 0){
       appendOne("myEvent",info)
       $.ajax({
         url: "/sendevent",
@@ -118,12 +118,13 @@ function listUpcomingEvents() {
       })
     }
     else appendOne("myEvent",'No upcoming events found.');
+    showMap()
   });
   updatecurpos();
 }
 
 function updatecurpos(){
-  if (evt) {
+  if (evt && checkTime(evt.start.dateTime) > 0) {
     navigator.geolocation.getCurrentPosition(function (position) {
       curpos = {
         lat: position.coords.latitude,
@@ -148,7 +149,7 @@ function updatecurpos(){
 setInterval(updatecurpos,5000)
 var check = setInterval(showMap,5000)
 function showMap(){
-  if (evt && checkTime(evt.start.dateTime) <= 1800000) {
+  if (evt && (checkTime(evt.start.dateTime) <= 1800000) && (checkTime(evt.start.dateTime) > 0)) {
     $.ajax({
       url: "/getDestination",
       type: "post",
@@ -160,10 +161,6 @@ function showMap(){
       }
     })
     clearInterval(check)
-    document.getElementById("showMap").style.display = "block"
-    document.getElementById("loading2").style.display = "none"
-    correct.style.display = 'block'
-    zoom.style.display = 'block'    
   }
   else{
     document.getElementById("loading2").style.display = "none"
@@ -186,6 +183,10 @@ function initMap() {
   })
   map.setCenter(despos);
   document.getElementById('map').firstChild.style.display = "block"
+  document.getElementById("showMap").style.display = "block"
+  document.getElementById("loading2").style.display = "none"
+  correct.style.display = 'block'
+  zoom.style.display = 'block'
   countDown()
   getOtherPos();
   addMyMarker();
@@ -278,7 +279,7 @@ function getOtherPos(){
     data:{"event_id":temp.id,
           "email":temp.self.myEmail},
     success: function(result){
-      console.log(result[0].position[result[0].position.length - 1])
+      // console.log(result[0].position[result[0].position.length - 1])
       removeMarkers("customMarker")
       addMarker(result,map)
       removeTrack(path)
