@@ -1,0 +1,27 @@
+#!bin/bash
+sudo yum update
+curl -sL https://rpm.nodesource.com/setup_8.x | bash -
+sudo yum install nodejs -y
+mkdir -p /opt/message
+cd /opt/message
+aws s3 cp s3://di17b-deploy/taco.chen/message.tgz . && tar zxf message.tgz && rm message.tgz 
+PORT=80 node index.js
+
+#!bin/bash
+sudo yum update
+curl -sL https://rpm.nodesource.com/setup_8.x | bash -
+sudo yum install nodejs -y
+sudo yum install git -y
+git clone https://github.com/TacoUltoud/message.git
+cd message
+npm i 
+PORT=80 node index.js
+
+#!/bin/bash
+curl --silent --location https://rpm.nodesource.com/setup_6.x | sudo bash -
+yum update
+yum install -y nodejs
+mkdir -p /opt/project
+cd /opt/project
+aws s3 cp s3://di17b-deploy/taco.chen/project.tgz . && tar zxf project.tgz && rm project.tgz 
+PORT=80 node index.js
